@@ -1,0 +1,4 @@
+APP_USER=demo
+APP_PASSWORD=change-me
+# any long random string, e.g. openssl rand -base64 48
+SESSION_SECRET=replace-with-a-long-random-string

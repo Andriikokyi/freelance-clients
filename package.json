@@ -1,0 +1,17 @@
+{
+  "name": "freelance-clients",
+  "private": true,
+  "description": "A one-person client tracker for freelancers on Cloudflare Workers + D1",
+  "license": "MIT",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute freelance-clients --remote --file=schema.sql",
+    "db:init:local": "wrangler d1 execute freelance-clients --local --file=schema.sql",
+    "db:seed:local": "wrangler d1 execute freelance-clients --local --file=seed.example.sql",
+    "check": "node calc.check.js public/index.html"
+  },
+  "devDependencies": {
+    "wrangler": "4.150.0"
+  }
+}

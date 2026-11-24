@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#09090B">
+<title>Фриланс-клієнти</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Клієнти">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap">
+<style>
+/* Dark dashboard: KPI row → funnel · calendar · money list → clients table. Separation by fill, no hairlines. One warm accent with glow. */
+:root{
+  color-scheme:dark;
+  --bg:#09090B; --panel:#141417; --panel-2:#1C1C21; --panel-3:#26262D; --hover:#202026;
+  --ink:#F5F5F7; --muted:#9B9BA6; --faint:#62626C;
+  --accent:#FF6B1F; --accent-2:#FF9152; --accent-soft:#2C170C; --accent-glow:rgba(255,107,31,.38); --on-accent:#120804;
+  --violet:#B49BFF; --violet-soft:#221C38;
+  --good:#5BE08E; --good-soft:#11291B;
+  --bad:#FF7A7A; --bad-soft:#2E1515;
+  --sky:#7CC4FF; --sky-soft:#12233A;
+  --scrim:rgba(0,0,0,.66);
+  --r-lg:26px; --r-md:18px; --r-sm:12px;
+  --font:"Onest", system-ui, -apple-system, "Segoe UI", sans-serif;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+svg.i{width:18px;height:18px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.app{max-width:1280px;margin:0 auto;padding-block:20px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:10px}
+@media (max-width:440px){.brand .mark{display:none}}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto;min-width:0}
+.mark{width:44px;height:44px;border-radius:14px;background:radial-gradient(120% 120% at 20% 10%,var(--accent-2),var(--accent) 55%,#B83A00);box-shadow:0 8px 24px -6px var(--accent-glow);display:grid;place-items:center;color:var(--on-accent);font-weight:700;font-size:18px;flex-shrink:0}
+.hello{display:flex;flex-direction:column;min-width:0}
+.hello small{color:var(--muted);font-size:13px}
+.hello h1{margin:0;font-size:clamp(22px,3.2vw,30px);font-weight:600;letter-spacing:-.02em;line-height:1.15}
+.btn{border:0;border-radius:999px;padding:11px 18px;font-weight:600;cursor:pointer;background:var(--panel-2);display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn:hover{background:var(--panel-3)}
+.btn.primary{background:linear-gradient(180deg,var(--accent-2),var(--accent));color:var(--on-accent);box-shadow:0 10px 28px -10px var(--accent-glow),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;color:var(--muted)}
+.btn.ghost:hover{background:var(--panel-2);color:var(--ink)}
+.btn.danger{background:var(--bad-soft);color:var(--bad)}
+.btn[disabled]{opacity:.5;cursor:default}
+.round{width:44px;height:44px;border-radius:50%;border:0;background:var(--panel);color:var(--muted);display:grid;place-items:center;cursor:pointer;flex-shrink:0}
+.round:hover{background:var(--panel-2);color:var(--ink)}
+
+.notice{background:var(--bad-soft);color:var(--bad);border-radius:var(--r-md);padding:12px 16px;font-weight:600}
+
+/* cards */
+.card{background:var(--panel);border-radius:var(--r-lg);padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;min-width:0}
+.card-h h2{margin:0;font-size:17px;font-weight:600;letter-spacing:-.01em}
+.card-h .sub{color:var(--muted);font-size:13px}
+.eyebrow{font-size:12.5px;color:var(--muted);font-weight:500}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{gap:14px;position:relative;overflow:hidden}
+.kpi-top{display:flex;align-items:center;gap:10px}
+.ico{width:38px;height:38px;border-radius:50%;background:var(--panel-3);display:grid;place-items:center;color:var(--ink);flex-shrink:0}
+.kpi-val{font-size:clamp(24px,3vw,34px);font-weight:600;letter-spacing:-.025em;line-height:1.1;font-variant-numeric:tabular-nums;display:flex;flex-direction:column;gap:2px;overflow-wrap:anywhere}
+.kpi-val .zero{color:var(--faint)}
+.kpi-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.kpi.hot{background:radial-gradient(130% 120% at 100% 0%,rgba(255,107,31,.42),rgba(255,107,31,.08) 45%,transparent 70%),linear-gradient(180deg,#1F130C,#141417)}
+.kpi.hot .ico{background:var(--accent);color:var(--on-accent);box-shadow:0 6px 18px -4px var(--accent-glow)}
+.kpi.hot .kpi-val{color:#FFE3D2}
+.kpi.alert .kpi-val{color:var(--bad)}
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:600;white-space:nowrap;background:var(--panel-3);color:var(--muted)}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.acc{background:var(--accent-soft);color:var(--accent-2)}
+.chip.vio{background:var(--violet-soft);color:var(--violet)}
+.chip.sky{background:var(--sky-soft);color:var(--sky)}
+
+/* middle row */
+.mid{display:grid;grid-template-columns:1.05fr 1fr 1.15fr;gap:14px;align-items:start}
+@media (max-width:1100px){.mid{grid-template-columns:repeat(2,minmax(0,1fr))}.mid .money{grid-column:1/-1}}
+@media (max-width:720px){.mid{grid-template-columns:minmax(0,1fr)}}
+
+.funnel-big{display:flex;align-items:baseline;gap:8px}
+.funnel-big b{font-size:44px;font-weight:600;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+.funnel-big span{color:var(--muted)}
+.fbars{display:flex;gap:6px;height:14px}
+.fbars i{border-radius:999px;min-width:10px}
+.flegend{display:flex;flex-wrap:wrap;gap:8px}
+.fl{flex:1 1 130px;background:var(--panel-2);border-radius:var(--r-sm);padding:10px 12px;display:flex;flex-direction:column;gap:2px;border:0;text-align:left;cursor:pointer;min-width:0}
+.fl:hover{background:var(--hover)}
+.fl .t{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+.fl .t::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
+.fl b{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.fl b small{font-size:12px;color:var(--faint);font-weight:500;margin-left:4px}
+.fl .s{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* calendar */
+.cal-nav{display:flex;align-items:center;gap:6px}
+.cal-nav .round{width:34px;height:34px;background:var(--panel-2)}
+.cal-month{font-weight:600;text-transform:capitalize;min-width:110px;text-align:center}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,40px));justify-content:space-between;row-gap:6px}
+.cal .dow{text-align:center;font-size:11.5px;color:var(--faint);font-weight:600;padding-bottom:2px}
+.day{aspect-ratio:1;max-width:100%;border:0;border-radius:50%;background:var(--panel-2);color:var(--muted);font-size:13.5px;font-weight:600;cursor:pointer;position:relative;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.day:hover{background:var(--panel-3);color:var(--ink)}
+.day.out{background:transparent;color:var(--faint)}
+.day.today{background:var(--ink);color:var(--bg)}
+.day.has{background:var(--accent);color:var(--on-accent);box-shadow:0 6px 16px -6px var(--accent-glow)}
+.day.late{background:var(--bad-soft);color:var(--bad)}
+.day.sel{outline:2px solid var(--ink);outline-offset:2px}
+.day .n{position:absolute;top:-3px;right:-3px;min-width:17px;height:17px;border-radius:9px;background:var(--ink);color:var(--bg);font-size:10.5px;display:grid;place-items:center;padding:0 4px}
+.steps{display:flex;flex-direction:column;gap:6px}
+.steps .lbl{font-size:12.5px;color:var(--muted)}
+.step{display:flex;align-items:center;gap:10px;border:0;background:var(--panel-2);border-radius:var(--r-sm);padding:9px 12px;cursor:pointer;text-align:left;min-width:0}
+.step:hover{background:var(--hover)}
+.step div{min-width:0;display:flex;flex-direction:column}
+.step b{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.step span{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* money list */
+.mlist{display:flex;flex-direction:column;gap:4px}
+.mrow{display:flex;align-items:center;gap:12px;border:0;background:transparent;border-radius:var(--r-md);padding:9px 10px;cursor:pointer;text-align:left;min-width:0}
+.mrow:hover{background:var(--panel-2)}
+.mrow:nth-child(odd){background:rgba(255,255,255,.018)}
+.mrow:nth-child(odd):hover{background:var(--panel-2)}
+.mrow .who{flex:1;min-width:0;display:flex;flex-direction:column}
+.mrow .who b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mrow .who span{font-size:12.5px;color:var(--muted)}
+.mrow .amt{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mrow .r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ava{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;flex-shrink:0;background:hsl(var(--h) 45% 22%);color:hsl(var(--h) 90% 78%)}
+
+/* clients table */
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;min-width:0;max-width:100%}
+.tabs{display:flex;gap:4px;background:var(--panel-2);border-radius:999px;padding:4px;overflow-x:auto;scrollbar-width:none;max-width:100%;min-width:0}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:transparent;border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;color:var(--muted)}
+.tab:hover{color:var(--ink)}
+.tab b{font-weight:600;color:var(--faint);margin-left:5px;font-variant-numeric:tabular-nums}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.tab[aria-selected="true"] b{color:#6B6B75}
+.search{display:flex;align-items:center;gap:8px;background:var(--panel-2);border-radius:999px;padding:0 14px;min-width:0;flex:0 1 280px;color:var(--muted)}
+.search input{background:transparent;border:0;padding:10px 0;width:100%;font-size:15px;outline:none}
+.search:focus-within{outline:2px solid var(--accent);outline-offset:1px}
+@media (max-width:640px){.search{flex:1 1 100%}}
+
+.thead,.trow{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,.9fr) minmax(0,1.5fr) minmax(0,1.6fr);gap:14px;align-items:center}
+.thead{padding:0 14px;font-size:12px;color:var(--faint);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.rows-wrap{display:flex;flex-direction:column;gap:4px}
+.trow{border:0;background:transparent;border-radius:var(--r-md);padding:12px 14px;cursor:pointer;text-align:left;width:100%}
+.trow:nth-child(odd){background:rgba(255,255,255,.022)}
+.trow:hover{background:var(--panel-2)}
+.c-who{display:flex;align-items:center;gap:12px;min-width:0}
+.c-who div{min-width:0;display:flex;flex-direction:column}
+.c-who b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c-who span{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c-money{display:flex;flex-direction:column;gap:6px;min-width:0;font-variant-numeric:tabular-nums}
+.c-money .l{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.c-money .l b{color:var(--ink);font-weight:600}
+.c-money .l strong{color:var(--accent-2)}
+.bar{display:flex;height:6px;border-radius:99px;background:var(--panel-3);overflow:hidden}
+.bar i{background:var(--good)}
+.bar u{background:var(--accent)}
+.bar s{background:var(--sky);text-decoration:none}
+.c-money .l em{font-style:normal;color:var(--sky);font-weight:600}
+.row.work{display:grid;grid-template-columns:minmax(0,1fr) 108px 34px;gap:6px 8px;padding-bottom:6px}
+.row.work .wst{grid-column:1/-1;justify-self:start;order:2}
+.wst{display:flex;gap:3px;background:var(--panel-2);border-radius:999px;padding:3px;flex-shrink:0}
+.wst button{border:0;background:transparent;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+.wst button:hover{color:var(--ink)}
+.wst button.on.done{background:var(--good-soft);color:var(--good)}
+.wst button.on.doing{background:var(--sky-soft);color:var(--sky)}
+.wst button.on.planned{background:var(--violet-soft);color:var(--violet)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend span::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
+.c-next{display:flex;flex-direction:column;min-width:0;font-size:13.5px}
+.c-next b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c-next span{font-size:12.5px;color:var(--muted)}
+.c-next.late span{color:var(--bad);font-weight:600}
+.c-next.today span{color:var(--accent-2);font-weight:600}
+.c-badges{display:flex;gap:5px;flex-wrap:wrap}
+.empty{padding:28px 18px;border-radius:var(--r-md);background:var(--panel-2);display:flex;flex-direction:column;gap:10px;align-items:flex-start;color:var(--muted)}
+.empty h3{margin:0;color:var(--ink);font-size:18px}
+.more{align-self:center}
+@media (max-width:820px){
+  .thead{display:none}
+  .trow{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"who st" "money money" "next next";gap:10px;padding:14px;background:var(--panel-2)!important}
+  .trow .c-who{grid-area:who;align-items:flex-start}.trow .c-who b{white-space:normal}
+  .trow .c-badges{grid-area:st;flex-direction:column;align-items:flex-end;align-self:start}.trow .c-money{grid-area:money}.trow .c-next{grid-area:next}
+  .trow .c-next:empty{display:none}
+}
+
+/* editor sheet */
+.sheet{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end}
+.scrim{position:absolute;inset:0;background:var(--scrim);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.panel{position:relative;width:min(620px,100%);height:100%;background:#0E0E11;display:flex;flex-direction:column;animation:slideIn .22s ease-out}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media (max-width:640px){.sheet{align-items:flex-end}.panel{height:calc(100% - 14px - env(safe-area-inset-top,0px));border-radius:24px 24px 0 0;animation-name:slideUp;overflow:hidden}}
+@media (prefers-reduced-motion:reduce){.panel{animation:none}}
+.s-head{display:flex;gap:10px;align-items:center;padding-block:max(18px,env(safe-area-inset-top,0px)) 10px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+@media (max-width:640px){.s-head{padding-top:18px}}
+.s-name{font-weight:600;font-size:21px;letter-spacing:-.01em;background:var(--panel)!important;border-radius:14px!important}
+.s-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding-block:4px 24px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px}
+.s-body section{background:var(--panel);border-radius:var(--r-md);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+h3.sh{margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600}
+.h-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+input,textarea{width:100%;min-width:0;border:0;border-radius:var(--r-sm);background:var(--panel-2);padding:11px 13px;font-size:16px}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+textarea{resize:vertical;min-height:72px}
+input[type="date"]{color-scheme:dark}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.opt{border:0;background:var(--panel-2);border-radius:999px;padding:8px 13px;font-weight:600;font-size:14px;cursor:pointer;color:var(--muted)}
+.opt:hover{color:var(--ink)}
+.chips.small .opt{padding:5px 10px;font-size:12.5px}
+.opt.on{background:var(--ink);color:var(--bg)}
+.rows{display:flex;flex-direction:column;gap:8px}
+.rows:empty{display:none}
+.row{display:flex;gap:8px;align-items:center;min-width:0}
+.ctype{border:0;background:var(--accent-soft);color:var(--accent-2);border-radius:var(--r-sm);padding:11px 10px;font-weight:600;font-size:13px;cursor:pointer;flex:0 0 98px;text-align:center}
+.mini{flex-shrink:0;border:0;background:var(--panel-3);color:var(--ink);border-radius:var(--r-sm);padding:11px 12px;font-weight:600;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.x{flex-shrink:0;border:0;background:transparent;color:var(--faint);width:34px;height:40px;border-radius:10px;cursor:pointer;display:grid;place-items:center}
+.x:hover{color:var(--bad);background:var(--bad-soft)}
+.add{align-self:flex-start;border:0;background:transparent;color:var(--accent-2);font-weight:600;padding:4px 2px;cursor:pointer}
+.check{display:flex;align-items:center;gap:6px;flex:0 0 auto;cursor:pointer;user-select:none}
+.check input{width:20px;height:20px;accent-color:var(--good);padding:0}
+.check span{font-size:12.5px;font-weight:600;color:var(--muted);width:64px}
+.check input:checked+span{color:var(--good)}
+.amt-in{flex:0 0 108px;text-align:right;font-variant-numeric:tabular-nums}
+.date-in{flex:0 0 156px}
+@media (max-width:520px){
+  .row.work,.row.pay{flex-wrap:wrap}
+  .row.work{grid-template-columns:minmax(0,1fr) 92px 34px}
+  .row.work .wst{justify-self:stretch}
+  .row.work .wst button{flex:1}
+  .row.pay .date-in{flex:1 1 0;min-width:0}
+  .row.pay .amt-in{flex:1 1 0;min-width:0}
+  .s-foot .btn[data-act="close"]{display:none}
+  .row.pay .note{flex:1 1 100%;order:3}
+  .ctype{flex-basis:86px}
+}
+.totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;font-variant-numeric:tabular-nums}
+.totals div{background:var(--panel-2);border-radius:var(--r-sm);padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.totals span{font-size:12px;color:var(--muted)}
+.totals strong{font-size:16px;overflow-wrap:anywhere}
+.totals .o{background:var(--accent-soft)} .totals .o strong{color:var(--accent-2)}
+.totals .p strong{color:var(--good)}
+.totals .w strong{color:var(--sky)}
+.totals .pl strong{color:var(--violet)}
+.s-foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel);padding-block:12px calc(12px + env(safe-area-inset-bottom,0px));padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+.s-foot .spacer{flex:1}
+.s-foot .msg{flex:1 1 100%;color:var(--accent-2);font-weight:600;font-size:14px}
+
+/* login */
+.login{position:fixed;inset:0;z-index:70;background:radial-gradient(60% 50% at 50% 0%,rgba(255,107,31,.22),transparent 70%),var(--bg);display:flex;align-items:center;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.login form{width:min(380px,100%);background:var(--panel);border-radius:28px;padding:28px 22px;display:flex;flex-direction:column;gap:14px}
+.login h2{margin:6px 0 2px;font-size:24px;font-weight:600;letter-spacing:-.02em}
+.login label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
+.login .err{margin:0;color:var(--bad);font-weight:600;font-size:14px}
+.login .btn{justify-content:center;padding:13px 16px;margin-top:4px}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:999px;z-index:80;font-weight:600;max-width:calc(100% - 32px);text-align:center}
+</style>
+</head>
+<body>
+
+<div class="login" id="login" hidden>
+  <form id="loginForm" autocomplete="on">
+    <div class="mark" aria-hidden="true">К</div>
+    <h2>Клієнти</h2>
+    <label>Логін<input id="lg-user" name="username" autocomplete="username" autocapitalize="none" required></label>
+    <label>Пароль<input id="lg-pass" name="password" type="password" autocomplete="current-password" required></label>
+    <p class="err" id="lg-err" role="alert" hidden></p>
+    <button class="btn primary" type="submit" id="lg-btn">Увійти</button>
+  </form>
+</div>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">К</div>
+      <div class="hello"><small id="today"></small><h1>Мої клієнти</h1></div>
+    </div>
+    <button class="btn primary" id="addBtn" type="button"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Клієнт</button>
+    <button class="round" id="logoutBtn" type="button" aria-label="Вийти" title="Вийти"><svg class="i" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11"/></svg></button>
+  </header>
+
+  <div class="notice" id="notice" hidden></div>
+
+  <section class="kpis" id="kpis" aria-label="Гроші"></section>
+
+  <div class="mid">
+    <section class="card" id="funnel" aria-label="Воронка"></section>
+    <section class="card" id="calendar" aria-label="Календар кроків"></section>
+    <section class="card money" id="money" aria-label="Гроші по клієнтах"></section>
+  </div>
+
+  <section class="card" aria-label="Клієнти">
+    <div class="card-h">
+      <h2>Усі клієнти</h2>
+      <div class="tools">
+        <div class="tabs" id="tabs" role="tablist" aria-label="Фільтр"></div>
+        <label class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Пошук" autocomplete="off" aria-label="Пошук"></label>
+      </div>
+    </div>
+    <div class="legend" aria-label="Кольори смужки"><span style="--c:var(--good)">отримано</span><span style="--c:var(--accent)">винен за зроблене</span><span style="--c:var(--sky)">в роботі</span><span style="--c:var(--panel-3)">заплановано, не погоджено</span></div>
+    <div class="thead" aria-hidden="true"><span>Клієнт</span><span>Статус</span><span>Гроші</span><span>Наступний крок</span></div>
+    <div class="rows-wrap" id="list" aria-live="polite"></div>
+  </section>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="scrim" data-act="close"></div>
+  <div class="panel" id="panel" role="dialog" aria-modal="true" aria-label="Клієнт"></div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const CUR = {USD:'$', EUR:'€', UAH:'₴', PLN:'zł', GBP:'£'};
+const STATUS = [['lead','Потенційний'],['talks','Переговори'],['active','В роботі'],['done','Завершено'],['lost','Відмова']];
+const SLABEL = Object.fromEntries(STATUS);
+const SCHIP = {lead:'', talks:'vio', active:'acc', done:'good', lost:'bad'};
+const SCOLOR = {lead:'#4A4A54', talks:'var(--violet)', active:'var(--accent)', done:'var(--good)', lost:'var(--bad)'};
+const CONTRACT = [['none','Без договору'],['pending','Треба підписати'],['signed','Підписано']];
+const CTYPES = ['telegram','whatsapp','viber','instagram','email','phone','site','other'];
+const CLABEL = {telegram:'Telegram',whatsapp:'WhatsApp',viber:'Viber',instagram:'Instagram',email:'Email',phone:'Телефон',site:'Сайт',other:'Інше'};
+const TABS = [['open','Актуальні'],['owed','Винні'],['active','В роботі'],['talks','Переговори'],['lead','Потенційні'],['archive','Архів']];
+const PAGE = 30;
+const ICON = {
+  wallet:'<path d="M3 7a2 2 0 0 1 2-2h12v4"/><path d="M3 7v10a2 2 0 0 0 2 2h14V9H5a2 2 0 0 1-2-2Z"/><circle cx="16" cy="14" r="1.2"/>',
+  hand:'<path d="M8 12.5 11 10l3 2 3-2.5 4 3.5-6 5-4-2-4 2-4-4 5-1.5Z"/><path d="M3 9.5 7 7l3 1"/>',
+  down:'<path d="M12 4v12M6 10l6 6 6-6M5 20h14"/>',
+  flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  chevL:'<path d="m15 6-6 6 6 6"/>', chevR:'<path d="m9 6 6 6-6 6"/>', x:'<path d="M6 6l12 12M18 6 6 18"/>',
+};
+const ico = (n, cls = 'i') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const num = v => { const n = parseFloat(String(v ?? '').replace(/[\s  ]/g,'').replace(',', '.')); return Number.isFinite(n) ? n : 0; };
+const sum = xs => xs.reduce((a, b) => a + b, 0);
+const nf = new Intl.NumberFormat('uk-UA', {maximumFractionDigits: 2});
+const fmt = (n, cur) => nf.format(n) + ' ' + (CUR[cur] || cur || '');
+const iso = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+const todayISO = () => iso(new Date());
+const fmtDate = s => {
+  if (!s) return '';
+  const [y, m, d] = s.split('-').map(Number);
+  const o = {day:'numeric', month:'short'};
+  if (y !== new Date().getFullYear()) o.year = 'numeric';
+  return new Date(y, m-1, d).toLocaleDateString('uk-UA', o);
+};
+const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? a : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? b : c; };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const initials = name => (String(name || '?').replace(/\(.*?\)/g, '').match(/[\p{L}\p{N}]+/gu) || ['?']).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const hue = name => { let h = 0; for (const ch of String(name)) h = (h * 31 + ch.codePointAt(0)) % 360; return h; };
+const ava = c => `<span class="ava" style="--h:${hue(c.name)}">${esc(initials(c.name))}</span>`;
+const statusChip = s => `<span class="chip ${SCHIP[s] || ''}">${SLABEL[s] || ''}</span>`;
+
+// A work is done (must be paid), doing (agreed, in progress) or planned (not agreed yet).
+const WSTATE = [['done','Зроблено'],['doing','В роботі'],['planned','Заплановано']];
+const wstate = w => w.state || (w.done ? 'done' : 'planned');
+// Money for one client. Payments cover done work first; an advance beyond that eats into doing, then planned.
+function calc(c) {
+  const works = c.works || [], pays = c.payments || [];
+  const by = s => sum(works.filter(w => wstate(w) === s).map(w => num(w.amount)));
+  const done = by('done'), doing = by('doing'), planned = by('planned');
+  const total = done + doing + planned, paid = sum(pays.map(p => num(p.amount)));
+  let extra = Math.max(paid - done, 0);
+  const inWork = Math.max(doing - extra, 0); extra = Math.max(extra - doing, 0);
+  return {total, done, doing, planned, paid, owed: Math.max(done - paid, 0), inWork, plan: Math.max(planned - extra, 0), left: Math.max(total - paid, 0)};
+}
+const isArchived = c => (c.status === 'done' || c.status === 'lost') && calc(c).owed === 0;
+function matches(c, f) {
+  if (f === 'open') return !isArchived(c);
+  if (f === 'owed') return calc(c).owed > 0;
+  if (f === 'archive') return isArchived(c);
+  return c.status === f;
+}
+// per-currency totals → "1 200 $ · 900 €"
+function byCur(list, pick) {
+  const t = {};
+  for (const c of list) { const v = pick(c); if (v > 0) t[c.currency || 'USD'] = (t[c.currency || 'USD'] || 0) + v; }
+  return t;
+}
+const curLines = t => { const ks = Object.keys(t); return ks.length ? ks.map(k => `<span>${fmt(t[k], k)}</span>`).join('') : '<span class="zero">0</span>'; };
+const curInline = t => Object.keys(t).map(k => fmt(t[k], k)).join(' · ') || '—';
+
+// contacts: guess the channel from what was typed; build a link where one exists
+function guessType(v) {
+  v = v.trim().toLowerCase();
+  if (!v) return null;
+  if (/t\.me\/|telegram/.test(v)) return 'telegram';
+  if (/instagram\.com|^ig[:\s]/.test(v)) return 'instagram';
+  if (/wa\.me|whatsapp/.test(v)) return 'whatsapp';
+  if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return 'email';
+  if (/^@[\w.]+$/.test(v)) return 'telegram';
+  if (/^\+?[\d\s()-]{7,}$/.test(v)) return 'phone';
+  if (/^https?:\/\/|^[\w-]+\.[a-z]{2,}(\/|$)/.test(v)) return 'site';
+  return null;
+}
+function contactLink(c) {
+  const v = (c.value || '').trim();
+  if (!v) return null;
+  const handle = v.replace(/^ig[:\s]+/i, '').replace(/^@/, '').replace(/^https?:\/\/(www\.)?(t\.me|instagram\.com)\//i, '').replace(/\/$/, '');
+  if (c.type === 'telegram') return 'https://t.me/' + handle;
+  if (c.type === 'instagram') return 'https://instagram.com/' + handle;
+  if (c.type === 'whatsapp') { const d = v.replace(/\D/g, ''); return d.length >= 7 ? 'https://wa.me/' + d : (/^https?:/.test(v) ? v : null); }
+  if (c.type === 'site') return /^https?:\/\//i.test(v) ? v : 'https://' + v;
+  if (c.type === 'email') return 'mailto:' + v;
+  if (c.type === 'phone') return 'tel:' + v.replace(/[^\d+]/g, '');
+  return null;
+}
+
+// ---------- state ----------
+let clients = [], loaded = false;
+let filter = 'open', query = '', shown = PAGE;
+let calMonth = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); })();
+let selDay = todayISO();
+let editing = null; // {id, d, isNew, dirty, confirmClose, armDelete, busy}
+const chains = {};
+
+function write(id, fn) {
+  const run = async () => {
+    try { return await fn(); }
+    catch (e) {
+      if (e && e.code === 'unavailable') { await new Promise(r => setTimeout(r, 600 + Math.random() * 800)); return fn(); }
+      throw e;
+    }
+  };
+  const p = (chains[id] || Promise.resolve()).catch(() => {}).then(run);
+  chains[id] = p;
+  return p;
+}
+function errMsg(e) {
+  const c = e && e.code;
+  if (c === 'auth') return 'Сесія закінчилась. Увійди ще раз, зміни в картці збережуться.';
+  if (c === 'too_large') return 'Картка завелика. Скороти нотатки й спробуй ще раз.';
+  return 'Не вдалося зберегти. Перевір з\'єднання і спробуй ще раз.';
+}
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 3200);
+}
+function notice(msg) { const n = $('#notice'); n.hidden = !msg; if (msg) n.textContent = msg; }
+
+// ---------- server API (same origin, session cookie) ----------
+async function api(method, path, body) {
+  let r;
+  try {
+    r = await fetch(path, {method, credentials: 'same-origin', headers: body !== undefined ? {'content-type': 'application/json'} : {}, body: body !== undefined ? JSON.stringify(body) : undefined});
+  } catch { throw {code: 'unavailable'}; }
+  if (r.status === 401 && path !== '/api/login') { showLogin(); throw {code: 'auth'}; }
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw {code: r.status >= 500 ? 'unavailable' : (data.error || 'http'), status: r.status};
+  return data;
+}
+const store = {
+  set: async (id, data) => { await api('PUT', '/api/clients/' + encodeURIComponent(id), data); const i = clients.findIndex(c => c.id === id); if (i >= 0) clients[i] = {...data, id}; else clients.push({...data, id}); render(); },
+  del: async id => { await api('DELETE', '/api/clients/' + encodeURIComponent(id)); clients = clients.filter(c => c.id !== id); render(); },
+};
+
+// ---------- render: KPIs ----------
+function renderKpis() {
+  const t = todayISO(), month = t.slice(0, 7);
+  const live = clients.filter(c => c.status !== 'lost');
+  const owing = clients.filter(c => calc(c).owed > 0);
+  const working = live.filter(c => calc(c).inWork > 0);
+  const planning = live.filter(c => calc(c).plan > 0);
+  const monthPaid = {};
+  for (const c of clients) for (const p of c.payments || []) if ((p.date || '').startsWith(month)) monthPaid[c.currency || 'USD'] = (monthPaid[c.currency || 'USD'] || 0) + num(p.amount);
+  const due = clients.filter(c => c.nextDate && c.nextDate <= t && !isArchived(c));
+  const late = due.filter(c => c.nextDate < t).length;
+  const monthName = new Date().toLocaleDateString('uk-UA', {month: 'long'});
+  $('#kpis').innerHTML = `
+    <div class="card kpi hot"><div class="kpi-top"><span class="ico">${ico('wallet')}</span><span class="eyebrow">Мені винні зараз</span></div>
+      <div class="kpi-val">${curLines(byCur(owing, c => calc(c).owed))}</div>
+      <div class="kpi-foot">${owing.length ? `<span class="chip acc">${owing.length} ${plural(owing.length,'клієнт','клієнти','клієнтів')}</span> за вже зроблене` : 'усе зроблене оплачено'}</div></div>
+    <div class="card kpi"><div class="kpi-top"><span class="ico">${ico('flag')}</span><span class="eyebrow">В роботі</span></div>
+      <div class="kpi-val">${curLines(byCur(working, c => calc(c).inWork))}</div>
+      <div class="kpi-foot"><span class="chip sky">${working.length} ${plural(working.length,'клієнт','клієнти','клієнтів')}</span> погоджено, ще не зроблено</div></div>
+    <div class="card kpi"><div class="kpi-top"><span class="ico">${ico('hand')}</span><span class="eyebrow">Заплановано й у пропозиціях</span></div>
+      <div class="kpi-val">${curLines(byCur(planning, c => calc(c).plan))}</div>
+      <div class="kpi-foot"><span class="chip vio">${planning.length} ${plural(planning.length,'клієнт','клієнти','клієнтів')}</span> ще не погоджено</div></div>
+    <div class="card kpi ${late ? 'alert' : ''}"><div class="kpi-top"><span class="ico">${ico('down')}</span><span class="eyebrow">Отримано: ${esc(monthName)}</span></div>
+      <div class="kpi-val">${curLines(monthPaid)}</div>
+      <div class="kpi-foot">${due.length ? `<span class="chip ${late ? 'bad' : 'acc'}">${due.length} ${plural(due.length,'крок','кроки','кроків')} на сьогодні</span>${late ? ` ${late} прострочено` : ''}` : 'кроків на сьогодні немає'}</div></div>`;
+}
+
+// ---------- render: funnel ----------
+function renderFunnel() {
+  const counts = STATUS.map(([k, l]) => ({k, l, n: clients.filter(c => c.status === k).length, money: byCur(clients.filter(c => c.status === k), c => calc(c).total)}));
+  const total = clients.length || 1;
+  const live = clients.filter(c => !isArchived(c)).length;
+  $('#funnel').innerHTML = `
+    <div class="card-h"><h2>Воронка</h2><span class="sub">усі статуси</span></div>
+    <div class="funnel-big"><b>${live}</b><span>${plural(live,'актуальний клієнт','актуальні клієнти','актуальних клієнтів')}</span></div>
+    <div class="fbars" aria-hidden="true">${counts.filter(x => x.n).map(x => `<i style="flex:${x.n};background:${SCOLOR[x.k]}"></i>`).join('')}</div>
+    <div class="flegend">${counts.map(x => `<button type="button" class="fl" data-tab="${x.k === 'done' || x.k === 'lost' ? 'archive' : x.k}" style="--c:${SCOLOR[x.k]}">
+      <span class="t">${x.l}</span><b>${x.n}<small>${Math.round(x.n / total * 100)}%</small></b><span class="s">${x.k === 'lead' ? 'пропозиції без відповіді' : curInline(x.money)}</span></button>`).join('')}</div>`;
+}
+
+// ---------- render: calendar of next steps ----------
+function stepsOn(day) { return clients.filter(c => c.nextDate === day && !isArchived(c)); }
+function renderCalendar() {
+  const t = todayISO(), y = calMonth.getFullYear(), m = calMonth.getMonth();
+  const first = new Date(y, m, 1), start = (first.getDay() + 6) % 7; // Monday first
+  const days = new Date(y, m + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(y, m, 1 - start + i), k = iso(d), out = d.getMonth() !== m;
+    if (i >= 35 && out) break;
+    const n = stepsOn(k).length;
+    const cls = ['day', out && 'out', k === t && 'today', n && (k < t ? 'late' : 'has'), k === selDay && 'sel'].filter(Boolean).join(' ');
+    cells.push(`<button type="button" class="${cls}" data-day="${k}" aria-label="${d.getDate()}${n ? ', кроків: ' + n : ''}">${d.getDate()}${n > 1 ? `<span class="n">${n}</span>` : ''}</button>`);
+  }
+  const list = stepsOn(selDay);
+  const upcoming = list.length ? null : clients.filter(c => c.nextDate && c.nextDate >= t && !isArchived(c)).sort((a, b) => a.nextDate.localeCompare(b.nextDate)).slice(0, 3);
+  const noDate = clients.filter(c => c.nextStep && !c.nextDate && !isArchived(c) && c.status !== 'lead').length;
+  const stepBtn = c => `<button type="button" class="step" data-id="${esc(c.id)}">${ava(c)}<div><b>${esc(c.name)}</b><span>${esc(c.nextStep || 'Крок')}${c.nextDate && c.nextDate !== selDay ? ' · ' + fmtDate(c.nextDate) : ''}</span></div></button>`;
+  $('#calendar').innerHTML = `
+    <div class="card-h"><h2>Календар кроків</h2>
+      <div class="cal-nav"><button type="button" class="round" data-cal="-1" aria-label="Попередній місяць">${ico('chevL')}</button><span class="cal-month">${calMonth.toLocaleDateString('uk-UA', {month: 'long', year: 'numeric'})}</span><button type="button" class="round" data-cal="1" aria-label="Наступний місяць">${ico('chevR')}</button></div></div>
+    <div class="cal">${['Пн','Вт','Ср','Чт','Пт','Сб','Нд'].map(d => `<span class="dow">${d}</span>`).join('')}${cells.join('')}</div>
+    <div class="steps">
+      <span class="lbl">${list.length ? (selDay === t ? 'Сьогодні' : fmtDate(selDay)) : upcoming.length ? `На ${selDay === t ? 'сьогодні' : fmtDate(selDay)} нічого. Найближчі:` : 'Запланованих кроків немає.'}${noDate ? ` <span class="chip">${noDate} без дати</span>` : ''}</span>
+      ${(list.length ? list : upcoming).map(stepBtn).join('')}
+    </div>`;
+}
+
+// ---------- render: money by client ----------
+function renderMoney() {
+  const rank = c => { const m = calc(c); return c.status === 'lost' && !m.owed ? 9 : m.owed > 0 ? 0 : m.inWork > 0 ? 1 : m.plan > 0 ? 2 : 9; };
+  const amt = (c, r) => { const m = calc(c); return r === 0 ? m.owed : r === 1 ? m.inWork : m.plan; };
+  const rows = clients.filter(c => rank(c) < 9).sort((a, b) => rank(a) - rank(b) || amt(b, rank(b)) - amt(a, rank(a))).slice(0, 8);
+  $('#money').innerHTML = `
+    <div class="card-h"><h2>Гроші по клієнтах</h2><span class="sub">борги, робота, пропозиції</span></div>
+    ${rows.length ? `<div class="mlist">${rows.map(c => {
+      const m = calc(c), r = rank(c), cur = c.currency || 'USD';
+      const chip = r === 0 ? '<span class="chip acc">винен</span>' : r === 1 ? '<span class="chip sky">в роботі</span>' : '<span class="chip vio">не погоджено</span>';
+      const more = [r !== 1 && m.inWork ? `в роботі ${fmt(m.inWork, cur)}` : '', r !== 2 && m.plan ? `заплановано ${fmt(m.plan, cur)}` : ''].filter(Boolean).join(', ');
+      const sub = r === 0 ? `зроблено на ${fmt(m.done, cur)}, отримано ${fmt(m.paid, cur)}` : c.contract === 'pending' ? 'договір не підписано' : (c.nextStep || SLABEL[c.status]);
+      return `<button type="button" class="mrow" data-id="${esc(c.id)}">${ava(c)}<span class="who"><b>${esc(c.name)}</b><span>${esc(sub + (more ? '; ' + more : ''))}</span></span><span class="r">${chip}<span class="amt">${fmt(amt(c, r), cur)}</span></span></button>`;
+    }).join('')}</div>` : '<div class="empty">Сум поки немає. Додай роботи з сумами в картці клієнта.</div>'}`;
+}
+
+// ---------- render: tabs + table ----------
+function renderTabs() {
+  $('#tabs').innerHTML = TABS.map(([k, l]) => `<button class="tab" role="tab" type="button" data-tab="${k}" aria-selected="${filter === k}">${l}<b>${clients.filter(c => matches(c, k)).length}</b></button>`).join('');
+}
+function rowHTML(c) {
+  const m = calc(c), cur = c.currency || 'USD', t = todayISO();
+  const contact = (c.contacts || []).find(x => x.value);
+  let money;
+  if (m.total > 0 || m.paid > 0) {
+    const base = Math.max(m.total, m.paid);
+    const pc = v => Math.min(v / base, 1) * 100;
+    const tag = m.owed > 0 ? `<strong>винен ${fmt(m.owed, cur)}</strong>` : m.inWork ? `<em>в роботі ${fmt(m.inWork, cur)}</em>` : m.paid ? `<span>отримано ${fmt(m.paid, cur)}</span>` : m.plan ? `<span>не погоджено</span>` : '';
+    money = `<span class="l"><b>${fmt(m.total, cur)}</b>${tag}</span><span class="bar" title="отримано · винен · в роботі · заплановано"><i style="width:${pc(m.paid)}%"></i><u style="width:${pc(m.owed)}%"></u><s style="width:${pc(m.inWork)}%"></s></span>`;
+  } else money = `<span class="l"><span>Сума не визначена</span></span>`;
+  let next = '', cls = '';
+  if (c.nextStep || c.nextDate) {
+    cls = c.nextDate && c.nextDate < t ? 'late' : c.nextDate === t ? 'today' : '';
+    next = `<b>${esc(c.nextStep || 'Крок')}</b>${c.nextDate ? `<span>${c.nextDate === t ? 'сьогодні' : fmtDate(c.nextDate)}${cls === 'late' ? ', прострочено' : ''}</span>` : ''}`;
+  }
+  const sub = c.work || (contact ? CLABEL[contact.type] + ' · ' + contact.value : '');
+  return `<button type="button" class="trow" data-id="${esc(c.id)}">
+    <span class="c-who">${ava(c)}<div><b>${esc(c.name || 'Без назви')}</b><span>${esc(sub)}</span></div></span>
+    <span class="c-badges">${statusChip(c.status)}${c.contract === 'pending' ? '<span class="chip bad">договір</span>' : ''}</span>
+    <span class="c-money">${money}</span>
+    <span class="c-next ${cls}">${next}</span>
+  </button>`;
+}
+function renderList() {
+  const L = $('#list');
+  if (!loaded && !clients.length) { L.innerHTML = `<div class="empty">Завантажую клієнтів…</div>`; return; }
+  if (!clients.length) { L.innerHTML = `<div class="empty"><h3>Поки порожньо</h3>Додай першого клієнта: назву, де ви на зв'язку, що ти робиш і скільки він має заплатити.<button class="btn primary" type="button" data-act="new">Додати клієнта</button></div>`; return; }
+  const q = query.trim().toLowerCase(), t = todayISO();
+  const rows = clients.filter(c => matches(c, filter)).filter(c => !q || [c.name, c.work, c.notes, c.nextStep, ...(c.contacts || []).map(x => x.value), ...(c.works || []).map(w => w.title)].join(' ').toLowerCase().includes(q));
+  const order = {active: 0, talks: 1, lead: 2, done: 3, lost: 4};
+  rows.sort((a, b) => {
+    const oa = calc(a).owed > 0, ob = calc(b).owed > 0;
+    if (oa !== ob) return ob - oa;
+    if (order[a.status] !== order[b.status]) return order[a.status] - order[b.status];
+    const da = a.nextDate || '9999', dbb = b.nextDate || '9999';
+    if (da !== dbb) return da < dbb ? -1 : 1;
+    return String(a.name).localeCompare(String(b.name), 'uk');
+  });
+  if (!rows.length) { L.innerHTML = `<div class="empty">${q ? 'Нікого не знайдено за цим запитом.' : 'У цьому розділі поки нікого.'}</div>`; return; }
+  L.innerHTML = rows.slice(0, shown).map(rowHTML).join('') + (rows.length > shown ? `<button type="button" class="btn more" data-act="more">Показати ще ${Math.min(PAGE, rows.length - shown)} з ${rows.length - shown}</button>` : '');
+}
+
+function render() {
+  $('#today').textContent = new Date().toLocaleDateString('uk-UA', {weekday: 'long', day: 'numeric', month: 'long'});
+  renderKpis(); renderFunnel(); renderCalendar(); renderMoney(); renderTabs(); renderList();
+}
+
+// ---------- sheet (edit one client) ----------
+const blank = () => ({name: '', status: 'lead', contacts: [{type: 'telegram', value: ''}], work: '', currency: 'USD', works: [], payments: [], contract: 'none', nextStep: '', nextDate: '', notes: ''});
+
+function openSheet(id) {
+  const src = id ? clients.find(c => c.id === id) : null;
+  if (id && !src) return;
+  const d = src ? structuredClone(src) : blank();
+  delete d.id;
+  d.contacts = (d.contacts || []).map(c => ({...c, manual: true}));
+  if (!d.contacts.length) d.contacts.push({type: 'telegram', value: ''});
+  d.works = d.works || []; d.payments = d.payments || [];
+  editing = {id: id || uid(), d, isNew: !src, dirty: false};
+  $('#sheet').hidden = false;
+  document.documentElement.style.overflow = 'hidden';
+  renderSheet();
+  if (!src) setTimeout(() => $('#f-name')?.focus(), 30);
+}
+function closeSheet(force) {
+  if (!editing) return;
+  if (editing.dirty && !force) { editing.confirmClose = true; renderFoot(); return; }
+  editing = null;
+  $('#sheet').hidden = true;
+  document.documentElement.style.overflow = '';
+}
+function totalsHTML(d) {
+  const m = calc(d), cur = d.currency;
+  return `<div><span>Зроблено</span><strong>${fmt(m.done, cur)}</strong></div>
+    <div class="p"><span>Отримано</span><strong>${fmt(m.paid, cur)}</strong></div>
+    <div class="${m.owed > 0 ? 'o' : ''}"><span>Винен зараз</span><strong>${fmt(m.owed, cur)}</strong></div>
+    <div class="w"><span>В роботі</span><strong>${fmt(m.inWork, cur)}</strong></div>
+    <div class="pl"><span>Заплановано</span><strong>${fmt(m.plan, cur)}</strong></div>`;
+}
+function contactActionHTML(c, i) {
+  const href = contactLink(c);
+  if (href && /^https?:/.test(href)) return `<a class="mini" href="${esc(href)}" target="_blank" rel="noopener noreferrer">Відкрити</a>`;
+  if ((c.value || '').trim()) return `<button class="mini" type="button" data-act="copy" data-i="${i}">Копіювати</button>`;
+  return '';
+}
+function renderSheet() {
+  const d = editing.d;
+  const body = document.querySelector('.s-body');
+  const scroll = body ? body.scrollTop : 0;
+  $('#panel').innerHTML = `
+  <div class="s-head">
+    <input id="f-name" class="s-name" data-f="name" value="${esc(d.name)}" placeholder="Назва клієнта" autocomplete="off" aria-label="Назва клієнта">
+    <button class="round" type="button" data-act="close" aria-label="Закрити">${ico('x')}</button>
+  </div>
+  <div class="s-body">
+    <section><h3 class="sh">Статус</h3>
+      <div class="chips">${STATUS.map(([k, l]) => `<button type="button" class="opt ${d.status === k ? 'on' : ''}" data-set="status" data-v="${k}" aria-pressed="${d.status === k}">${l}</button>`).join('')}</div>
+    </section>
+    <section><h3 class="sh">Де на зв'язку</h3>
+      <div class="rows">${d.contacts.map((c, i) => `
+        <div class="row contact">
+          <button type="button" class="ctype" data-act="ctype" data-i="${i}" title="Змінити канал">${CLABEL[c.type] || 'Інше'}</button>
+          <input id="f-c${i}" data-c="${i}" value="${esc(c.value)}" placeholder="@нік, телефон, email, посилання" autocomplete="off" aria-label="Контакт">
+          <span id="cact${i}">${contactActionHTML(c, i)}</span>
+          <button type="button" class="x" data-act="rm-c" data-i="${i}" aria-label="Прибрати контакт">${ico('x')}</button>
+        </div>`).join('')}</div>
+      <button type="button" class="add" data-act="add-c">+ канал</button>
+    </section>
+    <section><h3 class="sh">Що я роблю</h3>
+      <textarea id="f-work" data-f="work" rows="3" placeholder="Проєкт, обсяг, дедлайни">${esc(d.work)}</textarea>
+    </section>
+    <section>
+      <div class="h-row"><h3 class="sh">Роботи і суми</h3>
+        <div class="chips small" aria-label="Валюта">${Object.keys(CUR).map(k => `<button type="button" class="opt ${d.currency === k ? 'on' : ''}" data-set="currency" data-v="${k}" aria-pressed="${d.currency === k}">${k}</button>`).join('')}</div>
+      </div>
+      <div class="rows">${d.works.map((w, i) => `
+        <div class="row work">
+          <span class="wst" role="group" aria-label="Стан роботи">${WSTATE.map(([k, l]) => `<button type="button" class="${k} ${wstate(w) === k ? 'on' : ''}" data-act="wstate" data-i="${i}" data-v="${k}" aria-pressed="${wstate(w) === k}">${l}</button>`).join('')}</span>
+          <input id="f-wt${i}" class="title" data-w="${i}" data-k="title" value="${esc(w.title)}" placeholder="Що саме" autocomplete="off" aria-label="Робота">
+          <input id="f-wa${i}" class="amt-in" data-w="${i}" data-k="amount" inputmode="decimal" value="${esc(w.amount === 0 ? '' : w.amount)}" placeholder="0 ${CUR[d.currency]}" autocomplete="off" aria-label="Сума">
+          <button type="button" class="x" data-act="rm-w" data-i="${i}" aria-label="Прибрати роботу">${ico('x')}</button>
+        </div>`).join('')}</div>
+      <button type="button" class="add" data-act="add-w">+ робота</button>
+    </section>
+    <section><h3 class="sh">Оплати</h3>
+      <div class="rows">${d.payments.map((p, i) => `
+        <div class="row pay">
+          <input id="f-pd${i}" class="date-in" type="date" data-p="${i}" data-k="date" value="${esc(p.date)}" aria-label="Дата оплати">
+          <input id="f-pa${i}" class="amt-in" data-p="${i}" data-k="amount" inputmode="decimal" value="${esc(p.amount === 0 ? '' : p.amount)}" placeholder="0 ${CUR[d.currency]}" autocomplete="off" aria-label="Сума оплати">
+          <input id="f-pn${i}" class="note" data-p="${i}" data-k="note" value="${esc(p.note)}" placeholder="Коментар: аванс, карта, Payoneer" autocomplete="off" aria-label="Коментар">
+          <button type="button" class="x" data-act="rm-p" data-i="${i}" aria-label="Прибрати оплату">${ico('x')}</button>
+        </div>`).join('')}</div>
+      <button type="button" class="add" data-act="add-p">+ оплата</button>
+      <div class="totals" id="totals">${totalsHTML(d)}</div>
+    </section>
+    <section><h3 class="sh">Договір</h3>
+      <div class="chips">${CONTRACT.map(([k, l]) => `<button type="button" class="opt ${d.contract === k ? 'on' : ''}" data-set="contract" data-v="${k}" aria-pressed="${d.contract === k}">${l}</button>`).join('')}</div>
+    </section>
+    <section><h3 class="sh">Наступний крок</h3>
+      <div class="row pay">
+        <input id="f-next" class="note" data-f="nextStep" value="${esc(d.nextStep)}" placeholder="Написати, надіслати рахунок, дзвінок…" autocomplete="off" aria-label="Наступний крок">
+        <input id="f-nextd" class="date-in" type="date" data-f="nextDate" value="${esc(d.nextDate)}" aria-label="Коли">
+      </div>
+    </section>
+    <section><h3 class="sh">Нотатки</h3>
+      <textarea id="f-notes" data-f="notes" rows="5" placeholder="Домовленості, реквізити, побажання">${esc(d.notes)}</textarea>
+    </section>
+  </div>
+  <div class="s-foot" id="foot"></div>`;
+  renderFoot();
+  document.querySelector('.s-body').scrollTop = scroll;
+}
+function renderFoot() {
+  const e = editing, f = $('#foot');
+  if (!f) return;
+  if (e.confirmClose) {
+    f.innerHTML = `<span class="msg">Є незбережені зміни.</span><button type="button" class="btn ghost" data-act="discard">Не зберігати</button><span class="spacer"></span><button type="button" class="btn primary" data-act="save">Зберегти</button>`;
+    return;
+  }
+  f.innerHTML = `${e.isNew ? '' : `<button type="button" class="btn ${e.armDelete ? 'danger' : 'ghost'}" data-act="delete">${e.armDelete ? 'Точно видалити?' : 'Видалити'}</button>`}
+    <span class="spacer"></span>
+    <button type="button" class="btn" data-act="close">Скасувати</button>
+    <button type="button" class="btn primary" data-act="save" ${e.busy ? 'disabled' : ''}>${e.busy ? 'Зберігаю…' : 'Зберегти'}</button>`;
+}
+function markDirty() { editing.dirty = true; if (editing.confirmClose) { editing.confirmClose = false; renderFoot(); } }
+
+async function save() {
+  const e = editing, d = e.d;
+  d.name = (d.name || '').trim();
+  if (!d.name) { toast('Вкажи назву клієнта'); $('#f-name').focus(); return; }
+  const now = new Date().toISOString();
+  const out = {
+    ...d,
+    contacts: d.contacts.filter(c => (c.value || '').trim()).map(c => ({type: c.type, value: c.value.trim()})),
+    works: d.works.filter(w => (w.title || '').trim() || num(w.amount)).map(w => ({title: (w.title || '').trim(), amount: num(w.amount), state: wstate(w)})),
+    payments: d.payments.filter(p => num(p.amount)).map(p => ({date: p.date || todayISO(), amount: num(p.amount), note: (p.note || '').trim()})),
+    updatedAt: now,
+    createdAt: d.createdAt || now,
+  };
+  e.busy = true; renderFoot();
+  try { await write(e.id, () => store.set(e.id, out)); closeSheet(true); toast('Збережено'); }
+  catch (err) { e.busy = false; renderFoot(); toast(errMsg(err)); }
+}
+async function remove() {
+  const e = editing;
+  if (!e.armDelete) { e.armDelete = true; renderFoot(); setTimeout(() => { if (editing === e && e.armDelete) { e.armDelete = false; renderFoot(); } }, 4000); return; }
+  try { await write(e.id, () => store.del(e.id)); closeSheet(true); toast('Клієнта видалено'); }
+  catch (err) { toast(errMsg(err)); }
+}
+
+// ---------- events ----------
+$('#addBtn').addEventListener('click', () => openSheet());
+document.querySelector('.app').addEventListener('click', ev => {
+  const open = ev.target.closest('[data-id]');
+  if (open) return openSheet(open.dataset.id);
+  const tab = ev.target.closest('[data-tab]');
+  if (tab) { filter = tab.dataset.tab; shown = PAGE; renderTabs(); renderList(); if (tab.classList.contains('fl')) $('#tabs').scrollIntoView({behavior: 'smooth', block: 'center'}); return; }
+  const day = ev.target.closest('[data-day]');
+  if (day) { selDay = day.dataset.day; renderCalendar(); return; }
+  const cal = ev.target.closest('[data-cal]');
+  if (cal) { calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + +cal.dataset.cal, 1); renderCalendar(); return; }
+  const act = ev.target.closest('[data-act]');
+  if (act && act.dataset.act === 'new') openSheet();
+  if (act && act.dataset.act === 'more') { shown += PAGE; renderList(); }
+});
+$('#q').addEventListener('input', ev => { query = ev.target.value; shown = PAGE; renderList(); });
+
+$('#sheet').addEventListener('click', ev => {
+  if (!editing) return;
+  const el = ev.target.closest('[data-act],[data-set]'); if (!el) return;
+  const d = editing.d, i = +el.dataset.i;
+  if (el.dataset.set) { d[el.dataset.set] = el.dataset.v; markDirty(); renderSheet(); return; }
+  switch (el.dataset.act) {
+    case 'close': closeSheet(); break;
+    case 'discard': closeSheet(true); break;
+    case 'save': save(); break;
+    case 'delete': remove(); break;
+    case 'ctype': { const c = d.contacts[i]; c.type = CTYPES[(CTYPES.indexOf(c.type) + 1) % CTYPES.length]; c.manual = true; markDirty(); renderSheet(); break; }
+    case 'copy': {
+      const input = $('#f-c' + i), v = d.contacts[i].value;
+      const fallback = () => { input.focus(); input.select(); toast('Виділено, скопіюй вручну'); };
+      try { navigator.clipboard.writeText(v).then(() => toast('Скопійовано'), fallback); } catch { fallback(); }
+      break;
+    }
+    case 'add-c': d.contacts.push({type: 'telegram', value: ''}); renderSheet(); $('#f-c' + (d.contacts.length - 1)).focus(); break;
+    case 'rm-c': d.contacts.splice(i, 1); markDirty(); renderSheet(); break;
+    case 'wstate': d.works[i].state = el.dataset.v; delete d.works[i].done; markDirty(); renderSheet(); break;
+    case 'add-w': d.works.push({title: '', amount: '', state: d.status === 'active' ? 'doing' : 'planned'}); renderSheet(); $('#f-wt' + (d.works.length - 1)).focus(); break;
+    case 'rm-w': d.works.splice(i, 1); markDirty(); renderSheet(); break;
+    case 'add-p': {
+      const owed = calc(d).owed;
+      d.payments.push({date: todayISO(), amount: owed > 0 ? owed : '', note: ''}); markDirty(); renderSheet(); $('#f-pa' + (d.payments.length - 1)).select(); break;
+    }
+    case 'rm-p': d.payments.splice(i, 1); markDirty(); renderSheet(); break;
+  }
+});
+$('#sheet').addEventListener('input', ev => {
+  if (!editing) return;
+  const t = ev.target, d = editing.d;
+  if (t.dataset.f) d[t.dataset.f] = t.value;
+  else if (t.dataset.c !== undefined) {
+    const i = +t.dataset.c, c = d.contacts[i];
+    c.value = t.value;
+    if (!c.manual) { const g = guessType(t.value); if (g && g !== c.type) { c.type = g; t.parentElement.querySelector('.ctype').textContent = CLABEL[g]; } }
+    $('#cact' + i).innerHTML = contactActionHTML(c, i);
+  }
+  else if (t.dataset.w !== undefined) {
+    d.works[+t.dataset.w][t.dataset.k] = t.value;
+  }
+  else if (t.dataset.p !== undefined) d.payments[+t.dataset.p][t.dataset.k] = t.value;
+  else return;
+  markDirty();
+  const tot = $('#totals'); if (tot) tot.innerHTML = totalsHTML(d);
+});
+// a contact typed fresh starts in "auto" mode; once saved, its channel is fixed
+$('#sheet').addEventListener('focusin', ev => {
+  const t = ev.target;
+  if (editing && t.dataset && t.dataset.c !== undefined) { const c = editing.d.contacts[+t.dataset.c]; if (!c.value) c.manual = false; }
+});
+document.addEventListener('keydown', ev => {
+  if (!editing) return;
+  if (ev.key === 'Escape') closeSheet();
+  if ((ev.metaKey || ev.ctrlKey) && ev.key === 's') { ev.preventDefault(); save(); }
+});
+
+// ---------- data + login ----------
+let loading = false;
+async function load() {
+  if (loading) return;
+  loading = true;
+  try { clients = await api('GET', '/api/clients'); loaded = true; notice(null); render(); }
+  catch (e) { if (e.code !== 'auth') notice('Не вдалося завантажити клієнтів. Перевір з\'єднання, список оновиться сам.'); }
+  finally { loading = false; }
+}
+function showLogin() {
+  $('#login').hidden = false;
+  setTimeout(() => ($('#lg-user').value ? $('#lg-pass') : $('#lg-user')).focus(), 30);
+}
+$('#loginForm').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const err = $('#lg-err'), btn = $('#lg-btn');
+  err.hidden = true; btn.disabled = true;
+  try {
+    await api('POST', '/api/login', {user: $('#lg-user').value, password: $('#lg-pass').value});
+    $('#lg-pass').value = '';
+    $('#login').hidden = true;
+    load();
+  } catch (e) {
+    err.textContent = e.code === 'wrong' ? 'Невірний логін або пароль.'
+      : e.code === 'too_many' ? 'Забагато спроб. Спробуй через 15 хвилин.'
+      : e.code === 'not_configured' ? 'Пароль для сайту ще не задано.'
+      : 'Не вдалося увійти. Перевір з\'єднання.';
+    err.hidden = false;
+  }
+  btn.disabled = false;
+});
+$('#logoutBtn').addEventListener('click', async () => {
+  try { await api('POST', '/api/logout', {}); } catch {}
+  clients = []; loaded = false; render(); showLogin();
+});
+// phone and laptop stay in sync: refresh whenever the page comes back into view (not while editing)
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && !editing && $('#login').hidden) load(); });
+
+render();
+load();
+</script>
+</body>
+</html>
