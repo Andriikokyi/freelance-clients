@@ -1,5 +1,11 @@
 # Freelance Clients
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-FF6B1F)](LICENSE)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers%20%2B%20D1-F38020?logo=cloudflare&logoColor=white)](https://developers.cloudflare.com/workers/)
+[![No build step](https://img.shields.io/badge/build-none-1C1C21)](#how-it-is-built)
+
+Made by **[Andrii Kolodiazhenskyi](https://andrii-designer.com)**, product designer & design engineer.
+
 A small, private client tracker for one freelancer. See who owes you money, what is in progress, what is only proposed, and what your next step is with each client. Works on a phone and a laptop.
 
 It runs on your own Cloudflare account (free plan is enough): one Worker, one D1 database, no frameworks, no build step.
@@ -110,6 +116,9 @@ Each client is stored as one JSON document, so adding a field means editing only
 
 ## Українською
 
+Автор: **[Андрій Колодяженський](https://andrii-designer.com)**, продуктовий дизайнер і дизайн-інженер. Потрібен схожий інструмент під ваш бізнес? Пишіть через портфоліо.
+
+
 Простий особистий трекер клієнтів для фрилансера: хто скільки винен, що в роботі, що лише запропоновано, і який наступний крок з кожним клієнтом. Працює з телефона й ноутбука.
 
 Розгортається на твоєму власному акаунті Cloudflare (вистачає безкоштовного тарифу): один Worker і одна база D1, без фреймворків і збірки.
@@ -117,6 +126,18 @@ Each client is stored as one JSON document, so adding a field means editing only
 **Як запустити:** виконай команди з розділу «Set up» вище по черзі. Коротко: клонуй репозиторій, створи базу D1 і встав її `database_id` у `wrangler.jsonc`, створи таблиці (`npm run db:init`), задеплой (`npm run deploy`) і задай логін, пароль та `SESSION_SECRET` через `wrangler secret put`.
 
 **Що всередині:** картки з грошима (винні зараз, в роботі, заплановано, отримано за місяць), воронка за статусами, календар наступних кроків, список клієнтів з пошуком і фільтрами, картка клієнта з контактами, роботами, оплатами й нотатками.
+
+## About the author
+
+I'm **Andrii Kolodiazhenskyi**, a product designer who also writes the code. I built this tracker for my own freelance work, after losing track of who still owed me money, and decided to share it.
+
+I design and build websites, apps and internal tools like this one, mostly for SaaS, sport, outdoor and travel businesses. Other things I made: [Wayly](https://wayly.cc), a fog-of-war map app for hikers and runners, and [Startlek](https://startlek.com), a sports events calendar.
+
+**Need a tool like this shaped around your business, or a product designer who ships?** Get in touch:
+
+[Portfolio](https://andrii-designer.com) · [LinkedIn](https://www.linkedin.com/in/andriy-ko) · [Instagram](https://www.instagram.com/andrii.designer.engineer_)
+
+If this project saves you time, a ⭐ on the repo helps other freelancers find it.
 
 ## License
 
