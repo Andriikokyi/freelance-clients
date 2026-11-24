@@ -30,6 +30,8 @@ It runs on your own Cloudflare account (free plan is enough): one Worker, one D1
 
 You need Node.js 18+ and a Cloudflare account.
 
+The easiest start: click **Use this template → Create a new repository** at the top of this page, then clone your copy. Or clone this repo directly:
+
 ```bash
 git clone https://github.com/Andriikokyi/freelance-clients.git
 ```
